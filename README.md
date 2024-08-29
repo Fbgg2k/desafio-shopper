@@ -59,6 +59,7 @@ Para testar a rota `/upload`, siga os passos abaixo:
 
 1. **Converter a Imagem para Base64**:
    - Utilize uma ferramenta online como [Base64 Image Encoder](https://www.base64-image.de/) para converter a imagem do medidor para base64.
+   - A imagem `imagem.png` deve estar na raiz do projeto.
 
 2. **Configurar a Requisição no Insomnia**:
    - Método: `POST`
