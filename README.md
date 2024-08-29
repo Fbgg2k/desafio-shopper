@@ -26,6 +26,7 @@ Este projeto é uma aplicação Node.js desenvolvida com TypeScript e Docker. O 
 ├── docker-compose.yml
 ├── package.json
 ├── tsconfig.json
+├── imagem.png
 └── README.md
 ```
 
@@ -76,17 +77,6 @@ Para testar a rota `/upload`, siga os passos abaixo:
      ```
 
 3. **Enviar a Requisição**:
-   - Clique em "Send" e verifique a resposta do servidor.
-
-### 2. Teste de Listagem de Medidas
-Para testar a rota `GET /<customer_code>/list`, siga os passos abaixo:
-
-1. **Configurar a Requisição no Insomnia**:
-   - Método: `GET`
-   - URL: `http://localhost:3000/<customer_code>/list?measure_type=WATER`
-   - Substitua `<customer_code>` pelo código do cliente.
-
-2. **Enviar a Requisição**:
    - Clique em "Send" e verifique a resposta do servidor.
 
 ## Docker
