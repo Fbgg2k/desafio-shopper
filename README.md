@@ -2,56 +2,138 @@
 Back-end de um serviço que gerencia a leitura individualizada de consumo de água e gás. Para facilitar a coleta da informação, o serviço utilizará IA para obter a medição através da foto de um medidor.
 Seu endpoint `GET /:customer_code/list` parece estar bem configurado. Vamos testar esse endpoint usando o Insomnia.
 
-### Passos para Testar o Endpoint
+---
 
-#### 1. Iniciar o Servidor
-Certifique-se de que seu servidor está rodando:
-```bash
-npm run build
-npm start
+# Documentação do Projeto
+
+## Visão Geral
+Este projeto é uma aplicação Node.js desenvolvida com TypeScript e Docker. O objetivo é gerenciar leituras individualizadas de consumo de água e gás, utilizando IA para obter medições através de fotos de medidores.
+
+## Tecnologias Utilizadas
+- **Node.js**: Plataforma de desenvolvimento que permite a execução de JavaScript no servidor.
+- **TypeScript**: Superset do JavaScript que adiciona tipagem estática e outros recursos avançados.
+- **Docker**: Plataforma de contêineres que facilita a criação, o teste e a implantação de aplicações.
+
+## Estrutura do Projeto
 ```
-O servidor deve estar rodando na porta 3000.
-
-#### 2. Abrir o Insomnia
-Abra o Insomnia. Se ainda não tem, baixe e instale [aqui](https://insomnia.rest/download).
-
-#### 3. Criar uma Nova Requisição
-- Clique em "New Request".
-- Nomeie a requisição como "Listar Medidas".
-- Selecione o método HTTP `GET`.
-
-#### 4. Configurar a URL da Requisição
-- No campo de URL, insira `http://localhost:3000/<customer_code>/list`, substituindo `<customer_code>` pelo código do cliente que você deseja testar.
-- Se quiser filtrar por tipo de medida, adicione o query parameter `measure_type`. Por exemplo: `http://localhost:3000/<customer_code>/list?measure_type=WATER`.
-
-#### 5. Enviar a Requisição
-- Clique em "Send".
-- Verifique a resposta do servidor na aba de resposta.
-
-### Exemplo de Resposta Esperada
-A resposta deve ser uma lista de medidas realizadas pelo cliente. Aqui está um exemplo de como a resposta pode parecer:
-```json
-{
-  "customer_code": "12345",
-  "measures": [
-    {
-      "measure_id": "1",
-      "measure_type": "WATER",
-      "measure_value": 150,
-      "measure_datetime": "2024-08-29T08:00:00Z"
-    },
-    {
-      "measure_id": "2",
-      "measure_type": "GAS",
-      "measure_value": 75,
-      "measure_datetime": "2024-08-29T08:00:00Z"
-    }
-  ]
-}
+/leitura-consumo
+├── src
+│   ├── index.ts
+│   ├── routes.ts
+│   └── ...
+├── dist
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-### Verificação
-- **Status 200**: Sucesso, a resposta deve conter o código do cliente e uma lista de medidas.
-- **Status 400**: Tipo de medição inválido, a resposta deve conter `error_code` e `error_description`.
-- **Status 404**: Nenhuma leitura encontrada, a resposta deve conter `error_code` e `error_description`.
-- **Status 500**: Erro ao buscar leituras, a resposta deve indicar um erro interno do servidor.
+## Comandos Importantes
+### `npm run build`
+Este comando compila o código TypeScript para JavaScript, gerando os arquivos na pasta `dist`.
+
+### `npm start`
+Este comando inicia o servidor Node.js utilizando os arquivos compilados na pasta `dist`.
+
+## Iniciando o Projeto
+1. **Instalar Dependências**:
+   ```bash
+   npm install
+   ```
+
+2. **Compilar o Código**:
+   ```bash
+   npm run build
+   ```
+
+3. **Iniciar o Servidor**:
+   ```bash
+   npm start
+   ```
+   O servidor estará rodando na porta 3000.
+
+## Testando com Insomnia
+### 1. Teste de Upload de Imagem
+Para testar a rota `/upload`, siga os passos abaixo:
+
+1. **Converter a Imagem para Base64**:
+   - Utilize uma ferramenta online como [Base64 Image Encoder](https://www.base64-image.de/) para converter a imagem do medidor para base64.
+
+2. **Configurar a Requisição no Insomnia**:
+   - Método: `POST`
+   - URL: `http://localhost:3000/upload`
+   - Headers: `Content-Type: application/json`
+   - Body (JSON):
+     ```json
+     {
+       "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+       "customer_code": "12345",
+       "measure_datetime": "2024-08-29T08:00:00Z",
+       "measure_type": "monthly"
+     }
+     ```
+
+3. **Enviar a Requisição**:
+   - Clique em "Send" e verifique a resposta do servidor.
+
+### 2. Teste de Listagem de Medidas
+Para testar a rota `GET /<customer_code>/list`, siga os passos abaixo:
+
+1. **Configurar a Requisição no Insomnia**:
+   - Método: `GET`
+   - URL: `http://localhost:3000/<customer_code>/list?measure_type=WATER`
+   - Substitua `<customer_code>` pelo código do cliente.
+
+2. **Enviar a Requisição**:
+   - Clique em "Send" e verifique a resposta do servidor.
+
+## Docker
+### Dockerfile
+O `Dockerfile` define como a imagem Docker será construída:
+```dockerfile
+FROM node:14
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+CMD ["node", "dist/index.js"]
+```
+
+### docker-compose.yml
+O `docker-compose.yml` facilita a orquestração de múltiplos contêineres:
+```yaml
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+```
+
+### Iniciar com Docker
+1. **Construir a Imagem Docker**:
+   ```bash
+   docker-compose build
+   ```
+
+2. **Iniciar o Contêiner**:
+   ```bash
+   docker-compose up
+   ```
+
+## Conclusão
+Esta documentação cobre os aspectos principais do projeto, incluindo as tecnologias utilizadas, comandos npm, testes com Insomnia e configuração Docker. Se precisar de mais informações ou ajuda, sinta-se à vontade para abrir uma issue no repositório.
+
+---
